@@ -1,0 +1,67 @@
+﻿@page "/start"
+
+@using Devin.Data
+@inject NavigationManager NavManager
+@inject PlayerService PlayerService
+
+<p class="info">В следващите няколко полета вие трябва да попълните размера на дъската, имената на играчите и цветовете на цариците им.</p>
+
+<div class="form">
+    <p class="item">Брой колони: </p>
+    <input class="item" type="number" min="3" @bind="n" /><br>
+    <p class="item">Брой редове: </p>
+    <input class="item" type="number" min="3" @bind="m" /><br>
+    <p class="item">Име на първия играч: </p>
+    <input class="item" type="text" placeholder="Никнейм на първия играч" @bind="nicknameOne" /><br>
+    <p class="item">Цвят на @nicknameOne: </p>
+    <input class="item" type="color" @bind="colorOne" /><br>
+    <p class="item">Име на втория играч: </p>
+    <input class="item" type="text" placeholder="Никнейм на втория играч" @bind="nicknameTwo" /><br>
+    <p class="item">Цвят на @nicknameTwo: </p>
+    <input class="item" type="color" @bind="colorTwo" /><br>
+    <input type="checkbox" class="item" name="singlePlayer" @bind="singlePlayer">
+    <label for="singlePlayer" class="item">Срещу компютър</label><br>
+    <span class="item">@validationMessage</span>
+    <button class="item-button" @onclick="StartGame">Започни игра</button>
+</div>
+
+@code 
+{
+    private int n = 3;
+    private int m = 3;
+    private string nicknameOne = "Сотир";
+    private string nicknameTwo = "Гьозума";
+    private string colorOne;
+    private string colorTwo;
+    private bool singlePlayer;
+    private string validationMessage;
+
+    public void StartGame()
+    {
+        if (n < 3) n = 3;
+        if (m < 3) m = 3;
+
+        if (nicknameOne == nicknameTwo)
+        {
+            validationMessage = "Имената не трябва да са еднакви.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(nicknameOne))
+        {
+            nicknameOne = "Играч 1";
+        }
+
+        if (string.IsNullOrWhiteSpace(nicknameTwo))
+        {
+            nicknameTwo = "Играч 2";
+        }
+
+        Player playerOne = new Player(1, nicknameOne, colorOne);
+        Player playerTwo = new Player(2, nicknameTwo, colorTwo);
+        if (singlePlayer) playerTwo.IsSinglePlayer = true;
+        PlayerService.AddPlayers(playerOne, playerTwo);
+
+        NavManager.NavigateTo($"/game/{n}x{m}");
+    }
+}

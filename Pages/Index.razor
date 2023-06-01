@@ -1,0 +1,17 @@
+@page "/"
+
+@inject NavigationManager NavManager
+
+<h1 class="home-title">Добре дошли в Queens</h1>
+
+<p class="info">За да стартирате играта, натиснете бутона "Старт". За да видите как се играе, натиснете "Правила на играта" в менюто.</p>
+
+<button class="start-button" @onclick="Start">Старт</button>
+
+@code 
+{
+    public void Start()
+    {
+        NavManager.NavigateTo("/start");
+    }
+}

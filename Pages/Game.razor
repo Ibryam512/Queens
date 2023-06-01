@@ -1,0 +1,83 @@
+﻿@page "/game/{SizeText}"
+
+@using Devin.Data
+@inject BoardService BoardService
+@inject GameService GameService
+@inject MessageService MessageService
+@inject NavigationManager NavManager
+@inject PlayerService PlayerService
+
+<h3>Игра</h3>
+
+
+<div class="near-board">
+    <PlayerStatus @ref="playerStatus"/>
+    <Message @ref="messageComponent"/>
+    <button @onclick="NewGame">Нова игра</button>
+</div>
+
+<div class="board">
+@for (int i = 0; i < size[1]; i++)
+{
+    <div class="row">
+        @for (int j = 0; j < size[0]; j++)
+        {
+            <Square X=@i Y=@j @ref="square" />;
+        }
+    </div>
+}
+</div>
+
+
+@code 
+{
+    [Parameter]
+    public string SizeText { get; set; }
+
+    private int[] size;
+    private List<Square> row = new List<Square>();
+    private List<List<Square>> squares = new List<List<Square>>();
+    private Square square 
+    {
+        set
+        {
+            row.Add(value);
+            if (row.Count == size[0])
+            {
+                squares.Add(row);
+                BoardService.SetSquares(squares);
+                row = new List<Square>();
+            }
+        }
+    }
+
+    private PlayerStatus playerStatus
+    {
+        set => PlayerService.SetPlayerStatus(value);
+    }
+
+    private Message messageComponent
+    {
+        set => MessageService.SetMessageComponent(value);
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            size = SizeText.Split("x").Select(int.Parse).ToArray();
+            GameService.SetBoard(size[0], size[1]);
+        }
+        catch
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+
+    public void NewGame()
+    {
+        PlayerService.RefreshStatus();
+        BoardService.RefreshSquares();
+        GameService.SetBoard(size[0], size[1]);
+    }
+}

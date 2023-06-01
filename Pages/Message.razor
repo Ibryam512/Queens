@@ -1,0 +1,11 @@
+﻿<p>@MessageText</p>
+
+@code {
+    public string MessageText { get; set; } = "-";
+
+    public void SetMessage(string message)
+    {
+        this.MessageText = message;
+        StateHasChanged();
+    }
+}

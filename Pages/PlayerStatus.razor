@@ -1,0 +1,28 @@
+﻿@using Devin.Data
+@inject NavigationManager NavManager
+@inject PlayerService PlayerService
+
+<h3>Статус на играчите: </h3>
+
+<div>
+    <p>@players[0].Nickname @(players[0].Status == Status.Waiting ? "чака" : "слага царица") - @players[0].Winnings @(players[0].Winnings == 1 ? "победa" : "победи")</p>
+    <p>@players[1].Nickname @(players[1].Status == Status.Waiting ? "чака" : "слага царица") - @players[1].Winnings @(players[1].Winnings == 1 ? "победa" : "победи")</p>
+</div>
+
+@code {
+    private List<Player> players;
+
+    public void StateChanged() => StateHasChanged();
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            players = PlayerService.Players;
+        }
+        catch
+        {
+            NavManager.NavigateTo("/");
+        }
+    }
+}
